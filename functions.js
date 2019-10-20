@@ -79,3 +79,44 @@ var validate = function (target) {
 		}
 	})
 }
+
+var parseDate = function (dates, types, formate) {
+	var types = types || 'days'
+	switch (types) {
+		case 'days':
+			var times = (new Date(dates.replace(/-/g,'/'))).getTime(), now = (new Date()).getTime(), hours = 1000 * 60 * 60, days = 1000 * 60 * 60 * 24
+			var diff = now - times, str = ''
+			if (diff < 0) return dates
+			if (diff >= days * 30) {
+				str = dates.length > 10 ? dates.substring(0, 10) : dates
+			} else if (diff >= days) {
+				str = Math.floor(diff / days) + '天前'
+			} else {
+				str = Math.ceil(diff / hours) + '小时前'
+			}
+			return str
+		break
+		case 'chat':
+			var old = new Date(dates.replace(/-/g,'/')), now = new Date(), str = ''
+			if (old.getFullYear() < now.getFullYear()) {
+				str = dates.substring(dates.length - 3)
+			} else if (old.getMonth() < now.getMonth()) {
+				str = dates.substring(5, dates.length - 3)
+			} else if (old.getDate() < now.getDate()) {
+				str = dates.substring(5, dates.length - 3)
+			} else {
+				str = dates.substring(11, dates.length - 3)
+			}
+			return str
+		break
+		case 'date':
+			var date = new Date(dates * 1000)
+			var arr = { y: date.getFullYear(), m: date.getMonth() + 1, d: date.getDate(), h: date.getHours(), i: date.getMinutes(), s: date.getSeconds() }
+			var sparator = (formate || 'y-m-d h:i').split('')
+			sparator.forEach((v, k) => { if (arr[v]) sparator[k] = arr[v] < 10 ? '0' + arr[v] : arr[v] })
+			return sparator.join('')
+		break
+		default:
+			return dates.length > 10 ? dates.substring(0, 10) : dates
+	}
+}
